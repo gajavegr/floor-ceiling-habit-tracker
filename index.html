@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Habit Tracker</h1>
+        <form id="habit-form">
+            <input type="text" id="habit-name" placeholder="Habit Name" required>
+            <input type="number" id="habit-floor" placeholder="Floor Goal" required>
+            <input type="number" id="habit-ceiling" placeholder="Ceiling Goal" required>
+            <button type="submit">Add Habit</button>
+        </form>
+        <div id="habit-list"></div>
+        <canvas id="habit-chart"></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
