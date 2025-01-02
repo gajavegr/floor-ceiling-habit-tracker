@@ -1,0 +1,216 @@
+@emotion/react@11.14.0
+{
+  '@babel/runtime': '^7.18.3',
+  '@emotion/babel-plugin': '^11.13.5',
+  '@emotion/cache': '^11.14.0',
+  '@emotion/serialize': '^1.3.3',
+  '@emotion/use-insertion-effect-with-fallbacks': '^1.2.0',
+  '@emotion/utils': '^1.4.2',
+  '@emotion/weak-memoize': '^0.4.0',
+  'hoist-non-react-statics': '^3.3.1'
+}
+@emotion/styled@11.14.0
+{
+  '@babel/runtime': '^7.18.3',
+  '@emotion/babel-plugin': '^11.13.5',
+  '@emotion/is-prop-valid': '^1.3.0',
+  '@emotion/serialize': '^1.3.3',
+  '@emotion/use-insertion-effect-with-fallbacks': '^1.2.0',
+  '@emotion/utils': '^1.4.2'
+}
+@mui/icons-material@6.3.0
+{ '@babel/runtime': '^7.26.0' }
+@mui/material@5.16.13
+{
+  '@babel/runtime': '^7.23.9',
+  '@popperjs/core': '^2.11.8',
+  '@types/react-transition-group': '^4.4.10',
+  clsx: '^2.1.0',
+  csstype: '^3.1.3',
+  'prop-types': '^15.8.1',
+  'react-is': '^19.0.0',
+  'react-transition-group': '^4.4.5',
+  '@mui/core-downloads-tracker': '^5.16.13',
+  '@mui/system': '^5.16.13',
+  '@mui/utils': '^5.16.13',
+  '@mui/types': '^7.2.15'
+}
+@mui/x-date-pickers@7.23.3
+{
+  clsx: '^2.1.1',
+  '@mui/utils': '^5.16.6 || ^6.0.0',
+  'prop-types': '^15.8.1',
+  '@babel/runtime': '^7.25.7',
+  '@mui/x-internals': '7.23.0',
+  'react-transition-group': '^4.4.5',
+  '@types/react-transition-group': '^4.4.11'
+}
+@testing-library/jest-dom@6.6.3
+{
+  '@adobe/css-tools': '^4.4.0',
+  'aria-query': '^5.0.0',
+  chalk: '^3.0.0',
+  'css.escape': '^1.5.1',
+  'dom-accessibility-api': '^0.6.3',
+  lodash: '^4.17.21',
+  redent: '^3.0.0'
+}
+@testing-library/react@16.1.0
+{ '@babel/runtime': '^7.12.5' }
+@testing-library/user-event@14.5.2
+{}
+@types/react@18.3.18
+{ csstype: '^3.0.2', '@types/prop-types': '*' }
+@types/react-dom@18.3.5
+{}
+axios@1.7.9
+{
+  'form-data': '^4.0.0',
+  'proxy-from-env': '^1.1.0',
+  'follow-redirects': '^1.15.6'
+}
+cors@2.8.5
+{ vary: '^1', 'object-assign': '^4' }
+date-fns@4.1.0
+dotenv@16.4.7
+express@4.21.2
+{
+  qs: '6.13.0',
+  depd: '2.0.0',
+  etag: '~1.8.1',
+  send: '0.19.0',
+  vary: '~1.1.2',
+  debug: '2.6.9',
+  fresh: '0.5.2',
+  cookie: '0.7.1',
+  accepts: '~1.3.8',
+  methods: '~1.1.2',
+  'type-is': '~1.6.18',
+  parseurl: '~1.3.3',
+  statuses: '2.0.1',
+  encodeurl: '~2.0.0',
+  'proxy-addr': '~2.0.7',
+  'body-parser': '1.20.3',
+  'escape-html': '~1.0.3',
+  'http-errors': '2.0.0',
+  'on-finished': '2.4.1',
+  'safe-buffer': '5.2.1',
+  'utils-merge': '1.0.1',
+  'content-type': '~1.0.4',
+  finalhandler: '1.3.1',
+  'range-parser': '~1.2.1',
+  'serve-static': '1.16.2',
+  'array-flatten': '1.1.1',
+  'path-to-regexp': '0.1.12',
+  setprototypeof: '1.2.0',
+  'cookie-signature': '1.0.6',
+  'merge-descriptors': '1.0.3',
+  'content-disposition': '0.5.4'
+}
+jsonwebtoken@9.0.2
+{
+  ms: '^2.1.1',
+  jws: '^3.2.2',
+  semver: '^7.5.4',
+  'lodash.once': '^4.0.0',
+  'lodash.includes': '^4.3.0',
+  'lodash.isnumber': '^3.0.3',
+  'lodash.isstring': '^4.0.1',
+  'lodash.isboolean': '^3.0.3',
+  'lodash.isinteger': '^4.0.4',
+  'lodash.isplainobject': '^4.0.6'
+}
+npmvet@0.2.1
+{
+  blessed: '^0.1.81',
+  chalk: '^4.1.2',
+  commander: '9.1.0',
+  lodash: '^4.17.21',
+  pluralize: '^6.0.0',
+  semver: '^7.3.7',
+  table: '^6.8.0'
+}
+react@18.3.1
+{ 'loose-envify': '^1.1.0' }
+react-calendar@5.1.0
+{
+  '@wojtekmaj/date-utils': '^1.1.3',
+  clsx: '^2.0.0',
+  'get-user-locale': '^2.2.1',
+  warning: '^4.0.0'
+}
+react-dom@18.3.1
+{ scheduler: '^0.23.2', 'loose-envify': '^1.1.0' }
+react-scripts@5.0.1
+{
+  bfj: '^7.0.2',
+  jest: '^27.4.3',
+  dotenv: '^10.0.0',
+  eslint: '^8.3.0',
+  semver: '^7.3.5',
+  postcss: '^8.4.4',
+  prompts: '^2.4.2',
+  resolve: '^1.20.0',
+  webpack: '^5.64.4',
+  'fs-extra': '^10.0.0',
+  fsevents: '^2.3.2',
+  camelcase: '^6.2.1',
+  'babel-jest': '^27.4.2',
+  'css-loader': '^6.5.1',
+  '@babel/core': '^7.16.0',
+  'file-loader': '^6.2.0',
+  'sass-loader': '^12.3.0',
+  tailwindcss: '^3.0.2',
+  'babel-loader': '^8.2.3',
+  browserslist: '^4.18.1',
+  'jest-resolve': '^27.4.2',
+  'style-loader': '^3.3.1',
+  '@svgr/webpack': '^5.5.0',
+  'dotenv-expand': '^5.1.0',
+  'react-refresh': '^0.11.0',
+  'postcss-loader': '^6.2.1',
+  'react-dev-utils': '^12.0.1',
+  'postcss-normalize': '^10.0.1',
+  'source-map-loader': '^3.0.0',
+  'identity-obj-proxy': '^3.0.0',
+  'postcss-preset-env': '^7.0.1',
+  'react-app-polyfill': '^3.0.0',
+  'resolve-url-loader': '^4.0.0',
+  'webpack-dev-server': '^4.6.0',
+  'html-webpack-plugin': '^5.5.0',
+  'jest-watch-typeahead': '^1.0.0',
+  'eslint-webpack-plugin': '^3.1.1',
+  'terser-webpack-plugin': '^5.2.5',
+  'babel-preset-react-app': '^10.0.1',
+  'postcss-flexbugs-fixes': '^5.0.2',
+  'workbox-webpack-plugin': '^6.4.1',
+  'eslint-config-react-app': '^7.0.1',
+  'mini-css-extract-plugin': '^2.4.5',
+  'webpack-manifest-plugin': '^4.0.2',
+  'css-minimizer-webpack-plugin': '^3.2.0',
+  'babel-plugin-named-asset-import': '^0.3.8',
+  'case-sensitive-paths-webpack-plugin': '^2.4.0',
+  '@pmmmwh/react-refresh-webpack-plugin': '^0.5.3'
+}
+recharts@2.15.0
+{
+  clsx: '^2.0.0',
+  lodash: '^4.17.21',
+  'react-is': '^18.3.1',
+  'react-smooth': '^4.0.0',
+  eventemitter3: '^4.0.1',
+  'recharts-scale': '^0.4.4',
+  'tiny-invariant': '^1.3.1',
+  'victory-vendor': '^36.6.8'
+}
+typescript@4.9.5
+concurrently@9.1.2
+{
+  chalk: '^4.1.2',
+  lodash: '^4.17.21',
+  rxjs: '^7.8.1',
+  'shell-quote': '^1.8.1',
+  'supports-color': '^8.1.1',
+  'tree-kill': '^1.2.2',
+  yargs: '^17.7.2'
+}
