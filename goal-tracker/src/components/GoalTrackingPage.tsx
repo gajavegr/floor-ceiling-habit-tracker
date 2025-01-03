@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Paper, Typography, AppBar, Toolbar, Button, Dialog, DialogTitle, DialogContent, Slider, DialogActions, IconButton, MenuItem, Menu } from '@mui/material';
+import { Box, Container, Paper, Typography, AppBar, Toolbar, Button, Dialog, DialogTitle, DialogContent, Slider, DialogActions, IconButton, MenuItem, Menu, Badge } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Goal, GoalLog } from '../types';
 import { EditGoalDialog } from './EditGoalDialog';
 import { GoalForm } from './GoalForm';
-
+import { format, addDays, subDays } from 'date-fns';
+import TodayIcon from '@mui/icons-material/Today';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 interface GoalTrackingPageProps {
   userId: string;
@@ -20,7 +26,104 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   const [selectedGoalForMenu, setSelectedGoalForMenu] = useState<Goal | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addGoalDialogOpen, setAddGoalDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [monthlyLogs, setMonthlyLogs] = useState<{ [date: string]: GoalLog[] }>({});
+  const [currentViewMonth, setCurrentViewMonth] = useState<number>(new Date().getMonth());
 
+
+  // Effect to fetch monthly logs
+  useEffect(() => {
+    const fetchMonthLogs = async () => {
+      try {
+        const year = selectedDate.getFullYear();
+        const month = selectedDate.getMonth();
+        const response = await fetch(
+          `http://localhost:3001/api/logs/month?userId=${userId}&year=${year}&month=${month}`
+        );
+        const data = await response.json();
+        setMonthlyLogs(data);
+      } catch (error) {
+        console.error('Error fetching monthly logs:', error);
+      }
+    };
+  
+    // Fetch when month changes or component mounts
+    if (selectedDate.getMonth() !== currentViewMonth) {
+      setCurrentViewMonth(selectedDate.getMonth());
+    }
+    fetchMonthLogs();
+  }, [userId, selectedDate, currentViewMonth]);
+
+  const getAchievementColor = (achievedCount: number, totalGoals: number): string => {
+    if (totalGoals === 0) return 'transparent';
+    const percentage = (achievedCount / totalGoals) * 100;
+    
+    if (percentage >= 75) return '#4caf50'; // success.main - green
+    if (percentage >= 25) return '#ff9800'; // warning.main - yellow/orange
+    return '#f44336'; // error.main - red
+  };
+
+  // Add calendar badge renderer
+  const renderDayWithBadge = (props: any) => {
+    const dateStr = format(props.day, 'yyyy-MM-dd');
+    const dayLogs = monthlyLogs[dateStr] || [];
+    const achievedLogs = dayLogs.filter(log => log.status === 'achieved');
+    const isSelected = format(props.day, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd');
+    const isToday = format(props.day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+    const achievementColor = getAchievementColor(achievedLogs.length, goals.length);
+
+    return (
+      <Box
+        onClick={() => {
+          setSelectedDate(props.day);
+          setCalendarOpen(false);
+        }}
+        sx={{
+          width: 36,
+          height: 36,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          cursor: 'pointer',
+          margin: '2px',
+          borderRadius: '50%',
+          fontWeight: isToday ? 700 : 400, // Bold for current date
+          ...props.outsideCurrentMonth && {
+            color: 'text.disabled',
+          },
+          ...(isSelected && dayLogs.length > 0) && {
+            backgroundColor: achievementColor,
+            color: 'white',
+          },
+          ...(isSelected && dayLogs.length === 0) && {
+            backgroundColor: 'rgba(0, 0, 0, 0.1)', // Light gray background if no logs
+          },
+          ...(!props.outsideCurrentMonth && !isSelected) && {
+            '&:hover': {
+              backgroundColor: 'action.hover',
+            },
+          },
+          ...(dayLogs.length > 0 && !isSelected) && {
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              border: `2px solid ${achievementColor}`,
+              borderRadius: '50%',
+              pointerEvents: 'none',
+            }
+          }
+        }}
+      >
+        {props.day.getDate()}
+      </Box>
+    );
+  };
 
   // Fetch goals for the user
   useEffect(() => {
@@ -36,12 +139,12 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
     fetchGoals();
   }, [userId]);
 
-  // Fetch today's logs
+  // Fetch logs for selected date
   useEffect(() => {
-    const fetchTodayLogs = async () => {
+    const fetchDayLogs = async () => {
       try {
-        const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`http://localhost:3001/api/logs?userId=${userId}&date=${today}`);
+        const dateStr = format(selectedDate, 'yyyy-MM-dd');
+        const response = await fetch(`http://localhost:3001/api/logs?userId=${userId}&date=${dateStr}`);
         const data = await response.json();
         const logsMap = data.reduce((acc: any, log: GoalLog) => {
           acc[log.goalId] = log;
@@ -52,8 +155,20 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
         console.error('Error fetching logs:', error);
       }
     };
-    fetchTodayLogs();
-  }, [userId]);
+    fetchDayLogs();
+  }, [userId, selectedDate]);
+
+  const handlePreviousDay = () => {
+    setSelectedDate(prev => subDays(prev, 1));
+  };
+
+  const handleNextDay = () => {
+    setSelectedDate(prev => addDays(prev, 1));
+  };
+
+  const handleTodayClick = () => {
+    setSelectedDate(new Date());
+  };
 
   const getGoalStatus = (goalId: string) => {
     return logs[goalId]?.status || 'not_logged';
@@ -84,7 +199,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
 
   const updateGoalStatus = async (goalId: string, status: 'achieved' | 'failed' | 'not_logged', rating?: number) => {
     try {
-      const today = new Date().toISOString().split('T')[0];
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const response = await fetch('http://localhost:3001/api/logs', {
         method: 'POST',
         headers: {
@@ -93,20 +208,33 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
         body: JSON.stringify({
           goalId,
           userId,
-          date: today,
+          date: dateStr,
           status,
           rating,
         }),
       });
       const newLog = await response.json();
+      
+      // Update the daily logs
       setLogs(prev => ({
         ...prev,
         [goalId]: newLog,
       }));
+  
+      // Fetch updated monthly logs
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth();
+      const monthlyResponse = await fetch(
+        `http://localhost:3001/api/logs/month?userId=${userId}&year=${year}&month=${month}`
+      );
+      const monthlyData = await monthlyResponse.json();
+      setMonthlyLogs(monthlyData);
+      
     } catch (error) {
       console.error('Error updating goal status:', error);
     }
   };
+  
 
   const handleRatingSubmit = () => {
     if (selectedGoal) {
@@ -173,9 +301,87 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom>
-        Today's Goals
-      </Typography>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        mb: 3,
+        gap: 2
+      }}>
+        <IconButton onClick={handlePreviousDay}>
+          <ArrowBackIosNewIcon />
+        </IconButton>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <Typography 
+            variant="h5" 
+            sx={{ cursor: 'pointer' }}
+            onClick={() => setCalendarOpen(true)}
+          >
+            {format(selectedDate, 'MMMM d, yyyy')}
+          </Typography>
+          <IconButton 
+            onClick={handleTodayClick}
+            sx={{ 
+              ml: 1,
+              bgcolor: format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') 
+                ? 'primary.main' 
+                : 'transparent',
+              color: format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+                ? 'white'
+                : 'primary.main',
+              '&:hover': {
+                bgcolor: 'primary.light',
+              }
+            }}
+          >
+            <TodayIcon />
+          </IconButton>
+        </Box>
+        <IconButton onClick={handleNextDay}>
+          <ArrowForwardIosIcon />
+        </IconButton>
+      </Box>
+
+       {/* Add the Calendar Dialog */}
+       <Dialog
+          open={calendarOpen}
+          onClose={() => setCalendarOpen(false)}
+          maxWidth="xs"
+          fullWidth
+        >
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DateCalendar
+            value={selectedDate}
+            onChange={(newDate) => {
+              if (newDate) {
+                setSelectedDate(newDate);
+                setCalendarOpen(false);
+              }
+            }}
+            onMonthChange={(date) => {
+              setCurrentViewMonth(date.getMonth());
+            }}
+            slots={{
+              day: renderDayWithBadge
+            }}
+            sx={{
+              '& .MuiDayCalendar-weekDayLabel': {
+                width: 36,
+                height: 36,
+                margin: '0 2px',
+              },
+              '& .MuiPickersDay-root': {
+                margin: '0 2px',
+              }
+            }}
+          />
+          </LocalizationProvider>
+        </Dialog>
+
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {goals.map((goal) => (
           <Paper

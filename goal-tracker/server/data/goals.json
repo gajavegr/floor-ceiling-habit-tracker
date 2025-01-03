@@ -26,7 +26,19 @@
     "startDate": "2025-01-03T07:03:38.771Z",
     "frequencyType": "daily",
     "targetDate": "2025-12-31T05:00:00.000Z",
-    "targetSuccesses": 362,
-    "createdAt": "2025-01-03T07:04:17.303Z"
+    "targetSuccesses": 156,
+    "createdAt": "2025-01-02T09:33:42.249Z"
+  },
+  {
+    "id": "1735871710203",
+    "userId": "1735780689496",
+    "category": "Health",
+    "title": "Sleep 90% of sleep need every night",
+    "floor": 90,
+    "ceiling": 100,
+    "unit": "Sleep Need",
+    "startDate": "2025-01-03T02:34:43.086Z",
+    "frequencyType": "daily",
+    "createdAt": "2025-01-03T02:35:10.203Z"
   }
 ]
