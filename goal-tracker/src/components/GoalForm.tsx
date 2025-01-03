@@ -22,17 +22,27 @@ const DAYS_OF_WEEK = [
 ];
 
 export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit, initialGoal, onClose }) => {  // Add onClose here
-  const [goal, setGoal] = useState<Goal>(() => initialGoal || {
-    id: Math.random().toString(),
-    userId: '',
-    category: '',
-    title: '',
-    floor: 0,
-    ceiling: 0,
-    unit: '',
-    startDate: new Date(),
-    frequencyType: 'daily'
-  });
+  const [goal, setGoal] = useState<Goal>(() => {
+    if (initialGoal) {
+      return {
+        ...initialGoal,
+        // Convert date strings to Date objects
+        startDate: initialGoal.startDate ? new Date(initialGoal.startDate) : new Date(),
+        targetDate: initialGoal.targetDate ? new Date(initialGoal.targetDate) : undefined
+      };
+    }
+    return {
+      id: Math.random().toString(),
+      userId: '',
+      category: '',
+      title: '',
+      floor: '',
+      ceiling: '',
+      unit: '',
+      startDate: new Date(),
+      frequencyType: 'daily'
+    }
+});
 
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
@@ -135,16 +145,16 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit, initialGoal, onClo
             required
           />
           <TextField
-            type="number"
             label="Floor"
             value={goal.floor}
-            onChange={(e) => setGoal({...goal, floor: Number(e.target.value)})}
+            onChange={(e) => setGoal({...goal, floor: e.target.value})}
+            required
           />
           <TextField
-            type="number"
             label="Ceiling"
             value={goal.ceiling}
-            onChange={(e) => setGoal({...goal, ceiling: Number(e.target.value)})}
+            onChange={(e) => setGoal({...goal, ceiling: e.target.value})}
+            required
           />
           <TextField
             label="Unit"
@@ -239,7 +249,9 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit, initialGoal, onClo
             />
           </Box>
 
-          <Button type="submit" variant="contained">Add Goal</Button>
+          <Button type="submit" variant="contained">
+            {initialGoal ? 'Save Changes' : 'Add Goal'}
+          </Button>
         </Box>
       </form>
     </LocalizationProvider>

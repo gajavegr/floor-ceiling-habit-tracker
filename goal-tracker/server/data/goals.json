@@ -1,18 +1,32 @@
 [
   {
-    "id": "1735810422249",
+    "id": "1735887570144",
     "userId": "1735780689496",
     "category": "Health",
-    "title": "Exercise 3x a week",
-    "floor": 3,
-    "ceiling": 7,
-    "unit": "Workouts",
-    "startDate": "2025-01-02T09:33:23.867Z",
+    "title": "Exercise 3x per week",
+    "floor": "10 Pullups per day",
+    "ceiling": "Session at the gym",
+    "unit": "",
+    "startDate": "2025-01-03T06:58:35.668Z",
     "frequencyType": "days_per_period",
     "daysPerPeriod": 3,
     "periodUnit": "week",
+    "targetDate": "2025-12-25T05:00:00.000Z",
+    "targetSuccesses": 153,
+    "createdAt": "2025-01-03T06:59:30.144Z"
+  },
+  {
+    "id": "1735887857303",
+    "userId": "1735780689496",
+    "category": "Health",
+    "title": "Achieve 90% of Sleep Need",
+    "floor": "90",
+    "ceiling": "100",
+    "unit": "%",
+    "startDate": "2025-01-03T07:03:38.771Z",
+    "frequencyType": "daily",
     "targetDate": "2025-12-31T05:00:00.000Z",
-    "targetSuccesses": 156,
-    "createdAt": "2025-01-02T09:33:42.249Z"
+    "targetSuccesses": 362,
+    "createdAt": "2025-01-03T07:04:17.303Z"
   }
 ]

@@ -25,8 +25,8 @@ export interface Goal {
   userId: string;
   category: string;
   title: string;
-  floor: number;
-  ceiling: number;
+  floor: string;
+  ceiling: string;
   unit: string;
   startDate: Date;
   // New fields

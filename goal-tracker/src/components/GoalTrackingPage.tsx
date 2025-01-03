@@ -128,8 +128,33 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   };
 
   const handleEditClick = () => {
-    handleMenuClose();
     setEditDialogOpen(true);
+    setAnchorEl(null);  // Just close the menu, don't clear the selected goal
+  };
+
+  // Add a new handler for the dialog close
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+    setSelectedGoalForMenu(null);  // Clear the selected goal when dialog is closed
+  };
+  
+  // Also modify handleEditSave to clear selectedGoalForMenu
+  const handleEditSave = async (updatedGoal: Goal) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/goals/${updatedGoal.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedGoal),
+      });
+      const savedGoal = await response.json();
+      setGoals(goals.map(g => g.id === savedGoal.id ? savedGoal : g));
+      setEditDialogOpen(false);
+      setSelectedGoalForMenu(null);  // Clear selected goal after successful save
+    } catch (error) {
+      console.error('Error updating goal:', error);
+    }
   };
 
   const handleDeleteClick = async () => {
@@ -144,23 +169,6 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
       console.error('Error deleting goal:', error);
     }
     handleMenuClose();
-  };
-
-  const handleEditSave = async (updatedGoal: Goal) => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/goals/${updatedGoal.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedGoal),
-      });
-      const savedGoal = await response.json();
-      setGoals(goals.map(g => g.id === savedGoal.id ? savedGoal : g));
-      setEditDialogOpen(false);
-    } catch (error) {
-      console.error('Error updating goal:', error);
-    }
   };
 
   return (
@@ -226,7 +234,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
       <EditGoalDialog
         open={editDialogOpen}
         goal={selectedGoalForMenu}
-        onClose={() => setEditDialogOpen(false)}
+        onClose={handleEditDialogClose}  // Use new handler
         onSave={handleEditSave}
       />
 

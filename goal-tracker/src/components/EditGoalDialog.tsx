@@ -22,6 +22,8 @@ export const EditGoalDialog: React.FC<EditGoalDialogProps> = ({
   onClose,
   onSave,
 }) => {
+  if (!goal) return null;
+  
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>Edit Goal</DialogTitle>

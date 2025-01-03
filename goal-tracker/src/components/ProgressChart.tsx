@@ -21,7 +21,8 @@ interface ChartData {
 
 export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId }) => {
   const [chartData, setChartData] = useState<ChartData[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [floorLabel, setFloorLabel] = useState<string>('');
+  const [ceilingLabel, setCeilingLabel] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,10 +31,13 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId }) => {
         // Fetch goal details
         const goalResponse = await fetch(`http://localhost:3001/api/goals/${goalId}`);
         if (!goalResponse.ok) {
-          console.log('Goal response not OK:', await goalResponse.text());
           throw new Error(`Goal fetch failed with status: ${goalResponse.status}`);
         }
         const goal = await goalResponse.json();
+
+        // Store the text labels
+        setFloorLabel(goal.floor);
+        setCeilingLabel(goal.ceiling);
 
         // Fetch logs for this goal
         const logsResponse = await fetch(`http://localhost:3001/api/logs?goalId=${goalId}`);
@@ -48,16 +52,14 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId }) => {
           .map(log => ({
             date: log.date,
             value: log.rating,
-            floor: goal.floor,
-            ceiling: goal.ceiling
+            floor: 1,
+            ceiling: 10
           }))
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         setChartData(transformedData);
-        setError(null);
       } catch (error) {
         console.error('Error fetching data:', error);
-        setError(error instanceof Error ? error.message : 'An error occurred');
       }
     };
 
@@ -66,10 +68,6 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId }) => {
     }
   }, [goalId]);
 
-  if (error) {
-    return <Box sx={{ textAlign: 'center', py: 2, color: 'error.main' }}>Error loading progress data</Box>;
-  }
-
   if (chartData.length === 0) {
     return <Box sx={{ textAlign: 'center', py: 2 }}>No progress data available yet</Box>;
   }
@@ -77,8 +75,22 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId }) => {
   return (
     <LineChart width={600} height={300} data={chartData}>
       <XAxis dataKey="date" />
-      <YAxis domain={[0, 10]} />
-      <Tooltip />
+      <YAxis 
+        domain={[0, 10]} 
+        ticks={[0, 1, 10]} 
+        tickFormatter={(value) => {
+          if (value === 1) return floorLabel;
+          if (value === 10) return ceilingLabel;
+          return '';
+        }}
+      />
+      <Tooltip 
+        formatter={(value: number, name: string) => {
+          if (name === 'Floor') return floorLabel;
+          if (name === 'Ceiling') return ceilingLabel;
+          return value;
+        }}
+      />
       <Legend />
       <Line type="monotone" dataKey="value" stroke="#8884d8" name="Achievement" />
       <Line type="monotone" dataKey="floor" stroke="#82ca9d" name="Floor" strokeDasharray="5 5" />
