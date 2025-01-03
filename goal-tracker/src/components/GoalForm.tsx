@@ -44,7 +44,19 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit, initialGoal, onClo
     }
 });
 
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  // Initialize selectedDays with the days from initialGoal if they exist
+  const [selectedDays, setSelectedDays] = useState<string[]>(() => {
+    if (initialGoal && initialGoal.frequencyType === 'specific_days' && initialGoal.specificDays) {
+      return initialGoal.specificDays;
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    if (initialGoal?.frequencyType === 'specific_days' && initialGoal.specificDays) {
+      setSelectedDays(initialGoal.specificDays);
+    }
+  }, [initialGoal]);
 
   useEffect(() => {
     // Calculate targetSuccesses or targetDate based on which one is entered
@@ -131,7 +143,7 @@ export const GoalForm: React.FC<GoalFormProps> = ({ onSubmit, initialGoal, onClo
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <form onSubmit={handleSubmit}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}> {/* Add mt: 1 */}
           <TextField
             label="Title"
             value={goal.title}

@@ -259,6 +259,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
 
       <Collapse in={isExpanded}>
         <Box sx={{ 
+          mt: 2,
           backgroundColor: 'white',
           borderRadius: 1,
           p: 2,
@@ -268,7 +269,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
             Achievement Ratings
           </Typography>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={chartData}>
+            <LineChart data={chartData} margin={{ top: 30, right: 30, left: 20, bottom: 5 }}>
               <XAxis dataKey="date" />
               <YAxis 
                 domain={[0, 10]} 

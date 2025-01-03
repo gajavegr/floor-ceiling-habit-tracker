@@ -28,5 +28,24 @@
     "targetDate": "2025-12-31T05:00:00.000Z",
     "targetSuccesses": 362,
     "createdAt": "2025-01-03T07:04:17.303Z"
+  },
+  {
+    "id": "1735910942379",
+    "userId": "1735780689496",
+    "category": "Work",
+    "title": "Go into work",
+    "floor": "Drive to work",
+    "ceiling": "Bike to work",
+    "unit": "",
+    "startDate": "2025-01-03T13:28:40.628Z",
+    "frequencyType": "specific_days",
+    "specificDays": [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday"
+    ],
+    "createdAt": "2025-01-03T13:29:02.379Z"
   }
 ]
