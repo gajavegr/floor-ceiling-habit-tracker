@@ -298,6 +298,106 @@ app.delete('/api/goals/:id', async (req, res) => {
   }
 });
 
+app.get('/api/logs/month', async (req, res) => {
+  try {
+    const { userId, year, month } = req.query;
+    const logs = await readLogs();
+    
+    // Convert to numbers
+    const yearNum = parseInt(year);
+    const monthNum = parseInt(month);
+    
+    // Get previous and next month/year
+    const prevMonth = monthNum === 0 ? 11 : monthNum - 1;
+    const prevYear = monthNum === 0 ? yearNum - 1 : yearNum;
+    const nextMonth = monthNum === 11 ? 0 : monthNum + 1;
+    const nextYear = monthNum === 11 ? yearNum + 1 : yearNum;
+    
+    // Filter logs for the current month and adjacent months
+    const filteredLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      const logYear = logDate.getFullYear();
+      const logMonth = logDate.getMonth();
+      
+      // Check if log is in current month, previous month, or next month
+      const isCurrentMonth = logYear === yearNum && logMonth === monthNum;
+      const isPrevMonth = logYear === prevYear && logMonth === prevMonth;
+      const isNextMonth = logYear === nextYear && logMonth === nextMonth;
+      
+      return (
+        log.userId === userId && 
+        (isCurrentMonth || isPrevMonth || isNextMonth) &&
+        (log.status === 'achieved' || log.status === 'failed')
+      );
+    });
+
+    // Group logs by date
+    const logsByDate = filteredLogs.reduce((acc, log) => {
+      const date = log.date;
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(log);
+      return acc;
+    }, {});
+
+    res.json(logsByDate);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+app.get('/api/logs/month', async (req, res) => {
+  try {
+    const { userId, year, month } = req.query;
+    const logs = await readLogs();
+    
+    // Convert to numbers
+    const yearNum = parseInt(year);
+    const monthNum = parseInt(month);
+    
+    // Get previous and next month/year
+    const prevMonth = monthNum === 0 ? 11 : monthNum - 1;
+    const prevYear = monthNum === 0 ? yearNum - 1 : yearNum;
+    const nextMonth = monthNum === 11 ? 0 : monthNum + 1;
+    const nextYear = monthNum === 11 ? yearNum + 1 : yearNum;
+    
+    // Filter logs for the current month and adjacent months
+    const filteredLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      const logYear = logDate.getFullYear();
+      const logMonth = logDate.getMonth();
+      
+      // Check if log is in current month, previous month, or next month
+      const isCurrentMonth = logYear === yearNum && logMonth === monthNum;
+      const isPrevMonth = logYear === prevYear && logMonth === prevMonth;
+      const isNextMonth = logYear === nextYear && logMonth === nextMonth;
+      
+      return (
+        log.userId === userId && 
+        (isCurrentMonth || isPrevMonth || isNextMonth) &&
+        (log.status === 'achieved' || log.status === 'failed')
+      );
+    });
+
+    // Group logs by date
+    const logsByDate = filteredLogs.reduce((acc, log) => {
+      const date = log.date;
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(log);
+      return acc;
+    }, {});
+
+    res.json(logsByDate);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 // error handling
 // Update your error handler
 app.use((err, req, res, next) => {
