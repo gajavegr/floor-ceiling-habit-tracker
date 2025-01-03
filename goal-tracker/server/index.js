@@ -57,6 +57,26 @@ app.use(express.json());
 const dataPath = path.join(DATA_DIR, 'goals.json');
 const usersPath = path.join(DATA_DIR, 'users.json');
 const logsPath = path.join(DATA_DIR, 'logs.json');
+// At the top of index.js, add these imports
+const { 
+  format, 
+  startOfWeek, 
+  endOfWeek, 
+  startOfMonth, 
+  endOfMonth, 
+  startOfYear, 
+  endOfYear, 
+  isWithinInterval, 
+  eachDayOfInterval,
+  differenceInDays 
+} = require('date-fns');
+
+const debug = (message, ...args) => {
+  if (process.env.DEBUG) {
+    console.debug(`[Server] ${message}`, ...args);
+  }
+};
+
 
 
 // Initialize function
@@ -184,11 +204,14 @@ app.get('/api/goals/:id', async (req, res) => {
     console.log('Available goals:', goals.map(g => ({ id: g.id, title: g.title })));
     // console.debug('Requested ID:', requestedId);
     // console.debug('Available goals:', goals.map(g => ({ id: g.id, title: g.title })));
+    // debug('Requested ID:', requestedId);
+    // debug('Available goals:', goals.map(g => ({ id: g.id, title: g.title })));
     
     const goal = goals.find(g => String(g.id) === String(requestedId));
     if (!goal) {
       console.log('Goal not found for ID:', requestedId);
       // console.debug('Goal not found');
+      // debug('Goal not found');
       return res.status(404).json({ 
         message: 'Goal not found',
         requestedId,
@@ -197,6 +220,7 @@ app.get('/api/goals/:id', async (req, res) => {
     }
     console.log('Found goal:', goal);
     // console.debug('Found goal:', goal);
+    // debug('Found goal:', goal);
     res.json(goal);
   } catch (error) {
     console.error('Error in /api/goals/:id:', error);
@@ -242,6 +266,152 @@ app.post('/api/logs', async (req, res) => {
     res.status(201).json(newLog);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+// Get goal progress for the current period
+app.get('/api/goals/:id/progress', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date } = req.query; // Current date to calculate progress from
+    
+    const goals = await readGoals();
+    const logs = await readLogs();
+    const goal = goals.find(g => g.id === id);
+    
+    if (!goal) {
+      return res.status(404).json({ message: 'Goal not found' });
+    }
+
+    const currentDate = date ? new Date(date) : new Date();
+    
+    switch (goal.frequencyType) {
+      case 'days_per_period': {
+        const currentDate = date ? new Date(date) : new Date();
+        debug(`Server: Selected date is ${format(currentDate, 'EEEE')} (${format(currentDate, 'yyyy-MM-dd')})`);
+
+         // Ensure we're working with proper Date objects and Sunday as start of week
+        const periodStart = goal.periodUnit === 'week' 
+          ? startOfWeek(currentDate, { weekStartsOn: 0 }) // 0 = Sunday
+          : goal.periodUnit === 'month'
+            ? startOfMonth(currentDate)
+            : startOfYear(currentDate);
+
+        debug(`Server: Week starts on ${format(periodStart, 'EEEE')} (${format(periodStart, 'yyyy-MM-dd')})`);
+        
+          const periodEnd = goal.periodUnit === 'week'
+            ? endOfWeek(currentDate, { weekStartsOn: 0 }) // 0 = Sunday
+          : goal.periodUnit === 'month'
+            ? endOfMonth(currentDate)
+            : endOfYear(currentDate);
+
+        // Get achievements in current period
+        const periodLogs = logs.filter(log => {
+          const logDate = new Date(log.date);
+          return log.goalId === id &&
+            log.status === 'achieved' &&
+            isWithinInterval(logDate, { 
+              start: periodStart, 
+              end: periodEnd 
+            });
+        });
+
+        // For weekly goals, get day-by-day status
+        const dailyStatus = goal.periodUnit === 'week' ? 
+          eachDayOfInterval({ start: periodStart, end: periodEnd }, { weekStartsOn: 0 })
+            .map((day, index) => {
+              debug(`Server: Day ${format(day, 'EEEE')} at index ${index}`);
+              const dayStr = format(day, 'yyyy-MM-dd');
+              const achieved = periodLogs.some(log => {
+                debug(`Comparing log date ${log.date} with day ${dayStr}`);
+                return log.date === dayStr;
+              });
+              
+              return {
+                date: dayStr,
+                dayOfWeek: format(day, 'EEEE'),
+                isAchieved: achieved,
+                isRequired: periodLogs.length < (goal.daysPerPeriod || 0)
+              };
+            }) : null;
+        debug('Server: Final dailyStatus:', dailyStatus?.map(d => ({
+          dayOfWeek: d.dayOfWeek,
+          date: d.date,
+          isAchieved: d.isAchieved
+        })));
+        res.json({
+          type: 'period',
+          achieved: periodLogs.length,
+          required: goal.daysPerPeriod || 0,
+          periodUnit: goal.periodUnit,
+          dailyStatus,
+          periodStart: format(periodStart, 'yyyy-MM-dd'),
+          periodEnd: format(periodEnd, 'yyyy-MM-dd')
+        });
+        break;
+      }
+
+      case 'daily': {
+        const dayStr = format(currentDate, 'yyyy-MM-dd');
+        const todayLog = logs.find(log => 
+          log.goalId === id && 
+          log.date === dayStr
+        );
+        
+        res.json({
+          type: 'daily',
+          isAchieved: todayLog?.status === 'achieved'
+        });
+        break;
+      }
+
+      case 'specific_days': {
+        const dayStr = format(currentDate, 'yyyy-MM-dd');
+        const today = format(currentDate, 'EEEE').toLowerCase();
+        res.json({
+          type: 'specific_days',
+          isRequired: goal.specificDays.includes(today),
+          isAchieved: logs.some(log => 
+            log.goalId === id &&
+            log.date === dayStr &&
+            log.status === 'achieved'
+          )
+        });
+        break;
+      }
+
+      case 'repeating_n_days': {
+        // Find the last achievement
+        const lastAchievement = [...logs]
+          .filter(log => log.goalId === id && log.status === 'achieved')
+          .sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateB.getTime() - dateA.getTime();
+          })[0];
+
+          const daysSinceLastAchievement = lastAchievement
+          ? differenceInDays(
+              new Date(format(currentDate, 'yyyy-MM-dd')),
+              new Date(lastAchievement.date)
+            )
+          : goal.repeatEveryNDays;
+
+        res.json({
+          type: 'repeating',
+          isRequired: daysSinceLastAchievement >= goal.repeatEveryNDays,
+          daysSinceLastAchievement,
+          repeatEveryNDays: goal.repeatEveryNDays
+        });
+        break;
+      }
+    }
+  } catch (error) {
+    console.error('Error in progress endpoint:', error);
+    res.status(500).json({ 
+      message: error.message,
+      stack: error.stack // This helps with debugging
+    });
   }
 });
 
@@ -300,6 +470,13 @@ app.delete('/api/goals/:id', async (req, res) => {
 
 app.get('/api/logs/month', async (req, res) => {
   try {
+    const { id } = req.params;
+    const { date } = req.query;
+    
+    debug('Server: Received date string:', date);
+    const currentDate = date ? new Date(date) : new Date();
+    debug('Server: Parsed date:', format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
+
     const { userId, year, month } = req.query;
     const logs = await readLogs();
     
