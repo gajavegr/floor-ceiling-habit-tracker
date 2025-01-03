@@ -146,6 +146,53 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
     return successData;
   };
 
+  // Calculate streak data
+  const calculateStreakData = (logs: LogData[]): StreakData[] => {
+    let currentStreak = 0;
+    const streakData: StreakData[] = [];
+    
+    // Sort logs by date
+    const sortedLogs = [...logs].sort((a, b) => 
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    for (let i = 0; i < sortedLogs.length; i++) {
+      const currentLog = sortedLogs[i];
+      const currentDate = new Date(currentLog.date);
+      const previousDate = i > 0 ? new Date(sortedLogs[i - 1].date) : null;
+      
+      if (currentLog.status === 'achieved') {
+        if (previousDate) {
+          // Check if this log is consecutive with the previous one
+          const dayDifference = Math.floor(
+            (currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          
+          if (dayDifference === 1 && sortedLogs[i - 1].status === 'achieved') {
+            // Consecutive day achievement
+            currentStreak += 1;
+          } else {
+            // Gap in days or previous failure - reset streak
+            currentStreak = 1;
+          }
+        } else {
+          // First achievement
+          currentStreak = 1;
+        }
+      } else {
+        // Failed or skipped - reset streak
+        currentStreak = 0;
+      }
+
+      streakData.push({
+        date: format(currentDate, 'MMM dd'),
+        streak: currentStreak
+      });
+    }
+
+    return streakData;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -184,19 +231,8 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
           .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         // Calculate streak data
-        let currentStreak = 0;
-        const streakData = sortedLogs.map(log => {
-          if (log.status === 'achieved') {
-            currentStreak += 1;
-          } else {
-            currentStreak = 0;
-          }
-          return {
-            date: format(new Date(log.date), 'MMM dd'),
-            streak: currentStreak
-          };
-        });
-
+        const streakData = calculateStreakData(sortedLogs);
+        
         // Calculate success data
         const successData = calculateSuccessData(logs, goal);
 
