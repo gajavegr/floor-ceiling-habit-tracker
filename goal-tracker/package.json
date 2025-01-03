@@ -5,11 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "PORT=3000 react-scripts start",
+    "start:debug": "PORT=3000 DEBUG=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/index.js",
-    "dev": "concurrently \"npm run start\" \"npm run server\""
+    "server:debug": "DEBUG=true node server/index.js",
+    "dev": "concurrently \"npm run start\" \"npm run server\"",
+    "dev:debug": "concurrently \"npm run start:debug\" \"npm run server:debug\""
   },
   "keywords": [],
   "author": "gajavegr",

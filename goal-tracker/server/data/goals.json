@@ -30,15 +30,39 @@
     "createdAt": "2025-01-02T09:33:42.249Z"
   },
   {
-    "id": "1735871710203",
+    "id": "1735904054570",
     "userId": "1735780689496",
-    "category": "Health",
-    "title": "Sleep 90% of sleep need every night",
-    "floor": 90,
-    "ceiling": 100,
-    "unit": "Sleep Need",
-    "startDate": "2025-01-03T02:34:43.086Z",
-    "frequencyType": "daily",
-    "createdAt": "2025-01-03T02:35:10.203Z"
+    "category": "Work",
+    "title": "Go to Work",
+    "floor": "Go to Work",
+    "ceiling": "Leave after 8 hours",
+    "unit": "",
+    "startDate": "2025-01-03T11:33:29.786Z",
+    "frequencyType": "specific_days",
+    "targetDate": "2025-12-24T05:00:00.000Z",
+    "targetSuccesses": 253,
+    "specificDays": [
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "monday"
+    ],
+    "createdAt": "2025-01-03T11:34:14.570Z"
+  },
+  {
+    "id": "1735904113964",
+    "userId": "1735780689496",
+    "category": "Relationships",
+    "title": "Visit out of town friend",
+    "floor": "Buy a plane ticket",
+    "ceiling": "Make a plan",
+    "unit": "",
+    "startDate": "2025-01-03T11:34:19.144Z",
+    "frequencyType": "repeating_n_days",
+    "repeatEveryNDays": 9,
+    "targetDate": "2025-02-28T05:00:00.000Z",
+    "targetSuccesses": 7,
+    "createdAt": "2025-01-03T11:35:13.964Z"
   }
 ]

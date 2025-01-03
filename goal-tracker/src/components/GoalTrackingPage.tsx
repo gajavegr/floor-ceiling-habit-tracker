@@ -11,6 +11,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { GoalProgressPreview } from './GoalProgressPreview';
 
 interface GoalTrackingPageProps {
   userId: string;
@@ -30,6 +31,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [monthlyLogs, setMonthlyLogs] = useState<{ [date: string]: GoalLog[] }>({});
   const [currentViewMonth, setCurrentViewMonth] = useState<number>(new Date().getMonth());
+  const [logsVersion, setLogsVersion] = useState(0);
 
 
   // Effect to fetch monthly logs
@@ -220,6 +222,9 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
         ...prev,
         [goalId]: newLog,
       }));
+
+      // Increment the logs version to trigger preview updates
+      setLogsVersion(v => v + 1);
   
       // Fetch updated monthly logs
       const year = selectedDate.getFullYear();
@@ -393,11 +398,14 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
               alignItems: 'center',
             }}
           >
-            <Box>
-              <Typography variant="h6">{goal.title}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {goal.floor} - {goal.ceiling} {goal.unit}
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box>
+                <Typography variant="h6">{goal.title}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {goal.floor} - {goal.ceiling} {goal.unit}
+                </Typography>
+              </Box>
+              <GoalProgressPreview goalId={goal.id} selectedDate={selectedDate} logsVersion={logsVersion}/>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Button
