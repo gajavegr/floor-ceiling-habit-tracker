@@ -4,9 +4,17 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
+const port = process.env.PORT || 3001;  // Define port at the top
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3001',
+    'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app', // Add your Netlify domain
+    process.env.FRONTEND_URL // Add this for flexibility
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 const dataPath = path.join(__dirname, 'data', 'goals.json');
@@ -228,12 +236,10 @@ app.delete('/api/goals/:id', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
-
 // Initialize files and start server
 initializeFiles().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
   });
 }).catch(error => {
   console.error('Failed to initialize:', error);

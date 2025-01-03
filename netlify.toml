@@ -1,0 +1,4 @@
+[build]
+  base = "goal-tracker"
+  command = "npm run build"
+  publish = "build"

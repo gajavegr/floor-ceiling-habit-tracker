@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, Paper } from '@mui/material';
+import { API_URL } from '../config';
 
 interface User {
   id: string;
@@ -18,7 +19,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/users');
+        const response = await fetch(`${API_URL}/api/users`);
         const data = await response.json();
         setUsers(data);
       } catch (error) {
@@ -32,7 +33,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     if (!newUserName.trim()) return;
 
     try {
-      const response = await fetch('http://localhost:3001/api/users', {
+      const response = await fetch(`${API_URL}/api/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

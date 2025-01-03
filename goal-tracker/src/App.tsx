@@ -5,8 +5,7 @@ import { ProgressChart } from './components/ProgressChart';
 import { LoginPage } from './components/LoginPage';
 import { GoalTrackingPage } from './components/GoalTrackingPage';
 import { Goal } from './types'; // Import Goal from types file
-
-const API_URL = 'http://localhost:3001/api';
+import { API_URL } from './config';
 
 const App: React.FC = () => {
   // Initialize with mock data

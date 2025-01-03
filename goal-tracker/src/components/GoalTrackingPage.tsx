@@ -4,6 +4,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Goal, GoalLog } from '../types';
 import { EditGoalDialog } from './EditGoalDialog';
 import { GoalForm } from './GoalForm';
+import { API_URL } from '../config';
 
 
 interface GoalTrackingPageProps {
@@ -26,7 +27,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/api/goals?userId=${userId}`);
+        const response = await fetch(`${API_URL}/api//goals?userId=${userId}`);
         const data = await response.json();
         setGoals(data);
       } catch (error) {
@@ -41,7 +42,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
     const fetchTodayLogs = async () => {
       try {
         const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`http://localhost:3001/api/logs?userId=${userId}&date=${today}`);
+        const response = await fetch(`${API_URL}/api/logs?userId=${userId}&date=${today}`);
         const data = await response.json();
         const logsMap = data.reduce((acc: any, log: GoalLog) => {
           acc[log.goalId] = log;
@@ -85,7 +86,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   const updateGoalStatus = async (goalId: string, status: 'achieved' | 'failed' | 'not_logged', rating?: number) => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const response = await fetch('http://localhost:3001/api/logs', {
+      const response = await fetch(`${API_URL}/api/logs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +142,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   // Also modify handleEditSave to clear selectedGoalForMenu
   const handleEditSave = async (updatedGoal: Goal) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/goals/${updatedGoal.id}`, {
+      const response = await fetch(`${API_URL}/api/goals/${updatedGoal.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -161,7 +162,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
     if (!selectedGoalForMenu) return;
 
     try {
-      await fetch(`http://localhost:3001/api/goals/${selectedGoalForMenu.id}`, {
+      await fetch(`${API_URL}/api/goals/${selectedGoalForMenu.id}`, {
         method: 'DELETE',
       });
       setGoals(goals.filter(g => g.id !== selectedGoalForMenu.id));
@@ -289,7 +290,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
         <GoalForm 
           onSubmit={async (newGoal) => {
             try {
-              const response = await fetch('http://localhost:3001/api/goals', {
+              const response = await fetch(`${API_URL}/api/goals`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { API_URL } from '../config';
 
 interface ProgressChartProps {
   goalId: string;
@@ -197,7 +198,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
     const fetchData = async () => {
       try {
         // Fetch goal details
-        const goalResponse = await fetch(`http://localhost:3001/api/goals/${goalId}`);
+        const goalResponse = await fetch(`${API_URL}/api/goals/${goalId}`);
         if (!goalResponse.ok) {
           throw new Error(`Goal fetch failed with status: ${goalResponse.status}`);
         }
@@ -208,7 +209,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
         setCeilingLabel(goal.ceiling);
 
         // Fetch logs for this goal
-        const logsResponse = await fetch(`http://localhost:3001/api/logs?goalId=${goalId}`);
+        const logsResponse = await fetch(`${API_URL}/api/logs?goalId=${goalId}`);
         if (!logsResponse.ok) {
           throw new Error(`Logs fetch failed with status: ${logsResponse.status}`);
         }
