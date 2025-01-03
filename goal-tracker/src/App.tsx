@@ -115,30 +115,32 @@ const App: React.FC = () => {
               </Typography>
               <Box>
                 <Paper sx={{ p: 3 }}>
-                  {goals.length > 0 ? (
-                    goals.map((goal) => (
-                      <Box key={goal.id} sx={{ mb: 4 }}>
-                        <Typography variant="subtitle1">
-                          {goal.title} ({goal.category})
+                  <Box sx={{ p: 3 }}>
+                    {goals.length > 0 ? (
+                      goals.map((goal) => (
+                        <ProgressChart 
+                          key={goal.id} 
+                          goalId={goal.id} 
+                          goalTitle={goal.title}
+                          defaultExpanded={true}  // Set to false if you want them collapsed by default
+                        />
+                      ))
+                    ) : (
+                      <Box sx={{ textAlign: 'center', py: 3 }}>
+                        <Typography color="textSecondary" gutterBottom>
+                          No goals added yet. Add a goal to start tracking!
                         </Typography>
-                        <ProgressChart goalId={goal.id} />
+                        <Button 
+                          variant="contained" 
+                          color="primary"
+                          onClick={() => setAddGoalDialogOpen(true)}
+                          sx={{ mt: 2 }}
+                        >
+                          Add New Goal
+                        </Button>
                       </Box>
-                    ))
-                  ) : (
-                    <Box sx={{ textAlign: 'center', py: 3 }}>
-                      <Typography color="textSecondary" gutterBottom>
-                        No goals added yet. Add a goal to start tracking!
-                      </Typography>
-                      <Button 
-                        variant="contained" 
-                        color="primary"
-                        onClick={() => setAddGoalDialogOpen(true)}
-                        sx={{ mt: 2 }}
-                      >
-                        Add New Goal
-                      </Button>
-                    </Box>
-                  )}
+                    )}
+                  </Box>
                 </Paper>
               </Box>
             </Paper>
