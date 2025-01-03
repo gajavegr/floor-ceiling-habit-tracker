@@ -10,11 +10,14 @@ const port = process.env.PORT || 3001;  // Define port at the top
 app.use(cors({
   origin: [
     'http://localhost:3001',
-    'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app', // Add your Netlify domain
-    process.env.FRONTEND_URL // Add this for flexibility
+    'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app',
+    'https://floor-ceiling-goal-tracker.netlify.app'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 
 const dataPath = path.join(__dirname, 'data', 'goals.json');
@@ -24,28 +27,27 @@ const logsPath = path.join(__dirname, 'data', 'logs.json');
 
 // Initialize function
 async function initializeFiles() {
-  try {
-    await fs.access(path.join(__dirname, 'data'));
-  } catch {
-    await fs.mkdir(path.join(__dirname, 'data'));
-  }
+  const dataDir = path.join(__dirname, 'data');
 
   try {
-    await fs.access(usersPath);
+    await fs.access(dataDir);
   } catch {
-    await fs.writeFile(usersPath, '[]');
+    await fs.mkdir(dataDir, { recursive: true });
   }
 
-  try {
-    await fs.access(dataPath);
-  } catch {
-    await fs.writeFile(dataPath, '[]');
-  }
+  const files = {
+    users: path.join(dataDir, 'users.json'),
+    goals: path.join(dataDir, 'goals.json'),
+    logs: path.join(dataDir, 'logs.json')
+  };
 
-  try {
-    await fs.access(logsPath);
-  } catch {
-    await fs.writeFile(logsPath, '[]');
+  for (const [name, filePath] of Object.entries(files)) {
+    try {
+      await fs.access(filePath);
+    } catch {
+      await fs.writeFile(filePath, '[]', 'utf8');
+      console.log(`Created ${name} file`);
+    }
   }
 }
 
@@ -236,11 +238,22 @@ app.delete('/api/goals/:id', async (req, res) => {
   }
 });
 
-// Initialize files and start server
-initializeFiles().then(() => {
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
-}).catch(error => {
-  console.error('Failed to initialize:', error);
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
+
+// Initialize files and start server
+const initializeServer = async () => {
+  try {
+    await initializeFiles();
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to initialize server:', error);
+    process.exit(1);
+  }
+};
+
+initializeServer();
