@@ -11,12 +11,10 @@
   },
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "build": "npm install --omit=dev --no-cache"
+    "dev": "nodemon index.js"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

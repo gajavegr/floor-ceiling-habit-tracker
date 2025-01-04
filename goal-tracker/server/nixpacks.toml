@@ -1,11 +1,12 @@
-[phases.setup]
-  nixPkgs = ['nodejs', 'npm']
+[build]
+  builder = "nixpacks"
 
-[phases.install]
-  cmds = ['npm cache clean --force', 'npm install --omit=dev --no-cache']
+[deploy]
+  startCommand = "node index.js"
+  healthcheckPath = "/health"
+  restartPolicy = "on-failure"
+  maxRetries = 3
 
-[phases.build]
-  cmds = ['npm run build']
-
-[start]
-  cmd = 'npm start'
+[env]
+  NODE_ENV = "production"
+  NPM_CONFIG_PRODUCTION = "true"
