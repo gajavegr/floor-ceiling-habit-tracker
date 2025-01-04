@@ -14,5 +14,87 @@
     "targetDate": "2025-12-31T05:00:00.000Z",
     "targetSuccesses": 156,
     "createdAt": "2025-01-04T05:01:28.448Z"
+  },
+  {
+    "id": "1735968645927",
+    "userId": "1735966847331",
+    "category": "Health",
+    "title": "Sleep for at least 90% sleep need",
+    "floor": "90",
+    "ceiling": "100",
+    "unit": "%",
+    "startDate": "2025-01-04T05:30:16.032Z",
+    "frequencyType": "daily",
+    "targetDate": "2025-12-31T05:00:00.000Z",
+    "targetSuccesses": 365,
+    "createdAt": "2025-01-04T05:30:45.929Z"
+  },
+  {
+    "id": "1735968677204",
+    "userId": "1735966847331",
+    "category": "Work",
+    "title": "Go in to work",
+    "floor": "3",
+    "ceiling": "5",
+    "unit": "Times",
+    "startDate": "2025-01-04T05:30:48.890Z",
+    "frequencyType": "specific_days",
+    "targetDate": "2025-12-31T05:00:00.000Z",
+    "targetSuccesses": 260,
+    "specificDays": [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday"
+    ],
+    "createdAt": "2025-01-04T05:31:17.204Z"
+  },
+  {
+    "id": "1735968726222",
+    "userId": "1735966847331",
+    "category": "Relationships",
+    "title": "Visit Friends",
+    "floor": "Buy a ticket",
+    "ceiling": "Make an itinerary",
+    "unit": "",
+    "startDate": "2025-01-04T05:31:18.730Z",
+    "frequencyType": "repeating_n_days",
+    "repeatEveryNDays": 14,
+    "targetDate": "2025-11-30T05:00:00.000Z",
+    "targetSuccesses": 27,
+    "createdAt": "2025-01-04T05:32:06.222Z"
+  },
+  {
+    "id": "1735968867525",
+    "userId": "1735966847331",
+    "category": "Fun",
+    "title": "Only on Saturdays",
+    "floor": "0",
+    "ceiling": "10",
+    "unit": "",
+    "startDate": "2025-01-04T05:34:10.020Z",
+    "frequencyType": "specific_days",
+    "specificDays": [
+      "saturday"
+    ],
+    "createdAt": "2025-01-04T05:34:27.525Z"
+  },
+  {
+    "id": "1735969215469",
+    "userId": "1735966847331",
+    "category": "Relationships",
+    "title": "Do something fun with Neelie",
+    "floor": "Easy at-home",
+    "ceiling": "Big itinerary and nice dress",
+    "unit": "",
+    "startDate": "2025-01-04T05:39:19.212Z",
+    "frequencyType": "days_per_period",
+    "daysPerPeriod": 2,
+    "periodUnit": "week",
+    "targetDate": "2025-12-03T05:00:00.000Z",
+    "targetSuccesses": 106,
+    "createdAt": "2025-01-04T05:40:15.469Z"
   }
 ]

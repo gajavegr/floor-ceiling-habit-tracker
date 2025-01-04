@@ -299,6 +299,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId, onGo
       if (onGoalUpdate) {
         onGoalUpdate(); // Call the update function after editing
       }
+      setLogsVersion(v => v + 1);
     } catch (error) {
       console.error('Error updating goal:', error);
     }
