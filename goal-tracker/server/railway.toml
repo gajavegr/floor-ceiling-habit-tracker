@@ -6,8 +6,8 @@
   startCommand = "npm run start"
   healthcheckPath = "/health"
   healthcheckTimeout = 100
-  restartPolicyType = "on-failure"
-  restartPolicyMaxRetries = 3
+  restartPolicy = "on-failure"
+  maxRetries = 3
 
-[deploy.env]
+[env]
   NODE_ENV = "production"
