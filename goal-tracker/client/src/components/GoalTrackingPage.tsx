@@ -27,7 +27,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   useEffect(() => {
     const fetchGoals = async () => {
       try {
-        const response = await fetch(`${API_URL}/api//goals?userId=${userId}`);
+        const response = await fetch(`${API_URL}/api/goals?userId=${userId}`);
         const data = await response.json();
         setGoals(data);
       } catch (error) {

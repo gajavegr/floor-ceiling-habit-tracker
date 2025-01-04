@@ -1,51 +1,18 @@
 [
   {
-    "id": "1735887570144",
-    "userId": "1735780689496",
+    "id": "1735948756810",
+    "userId": "1735948554224",
     "category": "Health",
-    "title": "Exercise 3x per week",
-    "floor": "10 Pullups per day",
-    "ceiling": "Session at the gym",
+    "title": "Exercise 3x a week",
+    "floor": "10 pull-ups",
+    "ceiling": "Lifting session at gym",
     "unit": "",
-    "startDate": "2025-01-03T06:58:35.668Z",
+    "startDate": "2025-01-03T23:58:44.040Z",
     "frequencyType": "days_per_period",
     "daysPerPeriod": 3,
     "periodUnit": "week",
-    "targetDate": "2025-12-25T05:00:00.000Z",
-    "targetSuccesses": 153,
-    "createdAt": "2025-01-03T06:59:30.144Z"
-  },
-  {
-    "id": "1735887857303",
-    "userId": "1735780689496",
-    "category": "Health",
-    "title": "Achieve 90% of Sleep Need",
-    "floor": "90",
-    "ceiling": "100",
-    "unit": "%",
-    "startDate": "2025-01-03T07:03:38.771Z",
-    "frequencyType": "daily",
     "targetDate": "2025-12-31T05:00:00.000Z",
-    "targetSuccesses": 362,
-    "createdAt": "2025-01-03T07:04:17.303Z"
-  },
-  {
-    "id": "1735910942379",
-    "userId": "1735780689496",
-    "category": "Work",
-    "title": "Go into work",
-    "floor": "Drive to work",
-    "ceiling": "Bike to work",
-    "unit": "",
-    "startDate": "2025-01-03T13:28:40.628Z",
-    "frequencyType": "specific_days",
-    "specificDays": [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday"
-    ],
-    "createdAt": "2025-01-03T13:29:02.379Z"
+    "targetSuccesses": 156,
+    "createdAt": "2025-01-03T23:59:16.810Z"
   }
 ]

@@ -4,11 +4,12 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 3001;  // Define port at the top
+const port = process.env.PORT || 3000;  // Changed from 3001 to 3000
 
 // Middleware
 app.use(cors({
   origin: [
+    'http://localhost:3000',
     'http://localhost:3001',
     'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app',
     'https://floor-ceiling-goal-tracker.netlify.app'
@@ -88,6 +89,10 @@ const writeGoals = async (goals) => {
     console.error('Error writing goals:', error);
   }
 };
+
+app.get('/', (req, res) => {
+  res.json({ message: 'API is running' });
+});
 
 // User routes
 app.get('/api/users', async (req, res) => {

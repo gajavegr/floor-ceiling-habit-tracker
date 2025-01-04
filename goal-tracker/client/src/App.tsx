@@ -22,7 +22,7 @@ const App: React.FC = () => {
         if (userId) {
           const fetchGoals = async () => {
             try {
-              const response = await fetch(`${API_URL}/goals?userId=${userId}`);
+              const response = await fetch(`${API_URL}/api/goals?userId=${userId}`);
               const data = await response.json();
               setGoals(data);
             } catch (error) {
@@ -35,7 +35,7 @@ const App: React.FC = () => {
 
     const handleGoalSubmit = async (newGoal: Goal) => {
         try {
-          const response = await fetch(`${API_URL}/goals`, {
+          const response = await fetch(`${API_URL}/api/goals`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

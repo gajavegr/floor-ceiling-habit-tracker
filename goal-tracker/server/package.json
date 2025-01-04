@@ -1,0 +1,15 @@
+{
+  "name": "@goal-tracker/server",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
