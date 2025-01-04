@@ -12,7 +12,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "echo 'Build step not required'",
+    "build": "npm install --production",
     "postinstall": "npm run build"
   },
   "engines": {

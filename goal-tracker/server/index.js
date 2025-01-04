@@ -1,3 +1,19 @@
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit the process in production
+  if (process.env.NODE_ENV !== 'production') {
+    process.exit(1);
+  }
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit the process in production
+  if (process.env.NODE_ENV !== 'production') {
+    process.exit(1);
+  }
+});
+
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs').promises;
@@ -110,7 +126,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 
@@ -263,27 +283,41 @@ app.delete('/api/goals/:id', async (req, res) => {
   }
 });
 
-// Update error handling
+// error handling
+// Update your error handler
 app.use((err, req, res, next) => {
   console.error('Error details:', {
     message: err.message,
-    stack: err.stack,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     path: req.path,
     method: req.method
   });
+  
   res.status(500).json({
     message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    error: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
   });
 });
 
 // Update server initialization
+// Update your server initialization
 const initializeServer = async () => {
   try {
     await initializeFiles();
-    app.listen(port, '0.0.0.0', () => {
+    const server = app.listen(port, '0.0.0.0', () => {
       console.log(`Server running on port ${port}`);
-      console.log('Allowed origins:', allowedOrigins);
+      console.log(`Environment: ${process.env.NODE_ENV}`);
+    });
+
+    // Graceful shutdown
+    ['SIGTERM', 'SIGINT'].forEach(signal => {
+      process.on(signal, () => {
+        console.log(`Received ${signal}, shutting down gracefully`);
+        server.close(() => {
+          console.log('Server closed');
+          process.exit(0);
+        });
+      });
     });
   } catch (error) {
     console.error('Failed to initialize server:', error);
