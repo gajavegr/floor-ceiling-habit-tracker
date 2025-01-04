@@ -1,6 +1,5 @@
 [build]
-  builder = "nixpacks"
-  buildCommand = "npm cache clean --force && npm install --omit=dev --no-cache"
+  dockerfile = "Dockerfile"
 
 [deploy]
   startCommand = "node index.js"
