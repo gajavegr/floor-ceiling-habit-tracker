@@ -6,40 +6,55 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;  // Changed from 3001 to 3000
 
+const DATA_DIR = process.env.NODE_ENV === 'production' 
+  ? path.join('/tmp', 'data')
+  : path.join(__dirname, 'data');
+
 // Middleware
+// Update CORS configuration to use environment variables
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app',
+  'https://floor-ceiling-goal-tracker.netlify.app'
+];
+
+if (process.env.ALLOWED_ORIGINS) {
+  allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(','));
+}
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app',
-    'https://floor-ceiling-goal-tracker.netlify.app'
-  ],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Add request logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
 app.use(express.json());
 
-const dataPath = path.join(__dirname, 'data', 'goals.json');
-const usersPath = path.join(__dirname, 'data', 'users.json');
-const logsPath = path.join(__dirname, 'data', 'logs.json');
+const dataPath = path.join(DATA_DIR, 'goals.json');
+const usersPath = path.join(DATA_DIR, 'users.json');
+const logsPath = path.join(DATA_DIR, 'logs.json');
 
 
 // Initialize function
 async function initializeFiles() {
-  const dataDir = path.join(__dirname, 'data');
-
   try {
-    await fs.access(dataDir);
+    await fs.access(DATA_DIR);
   } catch {
-    await fs.mkdir(dataDir, { recursive: true });
+    await fs.mkdir(DATA_DIR, { recursive: true });
   }
 
   const files = {
-    users: path.join(dataDir, 'users.json'),
-    goals: path.join(dataDir, 'goals.json'),
-    logs: path.join(dataDir, 'logs.json')
+    users: path.join(DATA_DIR, 'users.json'),
+    goals: path.join(DATA_DIR, 'goals.json'),
+    logs: path.join(DATA_DIR, 'logs.json')
   };
 
   for (const [name, filePath] of Object.entries(files)) {
@@ -93,6 +108,11 @@ const writeGoals = async (goals) => {
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });
 });
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 
 // User routes
 app.get('/api/users', async (req, res) => {
@@ -243,17 +263,27 @@ app.delete('/api/goals/:id', async (req, res) => {
   }
 });
 
+// Update error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+  console.error('Error details:', {
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method
+  });
+  res.status(500).json({
+    message: 'Internal server error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
 
-// Initialize files and start server
+// Update server initialization
 const initializeServer = async () => {
   try {
     await initializeFiles();
-    app.listen(port, () => {
+    app.listen(port, '0.0.0.0', () => {
       console.log(`Server running on port ${port}`);
+      console.log('Allowed origins:', allowedOrigins);
     });
   } catch (error) {
     console.error('Failed to initialize server:', error);

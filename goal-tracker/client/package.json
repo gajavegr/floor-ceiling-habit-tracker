@@ -11,6 +11,8 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "axios": "^1.7.9",
@@ -20,7 +22,8 @@
     "react-dom": "^18.3.1",
     "react-scripts": "^5.0.1",
     "recharts": "^2.15.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "web-vitals": "^3.0.0"
   },
   "scripts": {
     "start": "PORT=3001 react-scripts start",
