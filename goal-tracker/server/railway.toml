@@ -1,11 +1,10 @@
 [build]
   builder = "nixpacks"
-  buildCommand = "npm ci --only=production"
+  buildCommand = "npm cache clean --force && npm install --omit=dev --no-cache"
 
 [deploy]
   startCommand = "node index.js"
   healthcheckPath = "/health"
-  healthcheckTimeout = 100
   restartPolicy = "on-failure"
   maxRetries = 3
 

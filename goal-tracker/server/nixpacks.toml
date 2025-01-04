@@ -1,0 +1,11 @@
+[phases.setup]
+  nixPkgs = ['nodejs', 'npm']
+
+[phases.install]
+  cmds = ['npm cache clean --force', 'npm install --omit=dev --no-cache']
+
+[phases.build]
+  cmds = ['npm run build']
+
+[start]
+  cmd = 'npm start'

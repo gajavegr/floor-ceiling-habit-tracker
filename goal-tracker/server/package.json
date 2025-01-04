@@ -12,7 +12,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "npm ci --only=production"
+    "build": "npm install --omit=dev --no-cache"
   },
   "engines": {
     "node": ">=18.0.0",
