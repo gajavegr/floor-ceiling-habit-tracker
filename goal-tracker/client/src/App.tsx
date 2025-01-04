@@ -11,27 +11,36 @@ const App: React.FC = () => {
   // Initialize with mock data
 //   const [goals, setGoals] = useState<Goal[]>(MOCK_GOALS);
     const [goals, setGoals] = useState<Goal[]>([]);
+    const [chartRefreshTrigger, setChartRefreshTrigger] = useState(0);
     const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState<'tracking' | 'form' | 'progress'>('tracking');
     const [addGoalDialogOpen, setAddGoalDialogOpen] = useState(false);
 
-
+    // Add a function to fetch goals
+    const fetchGoals = async (userId: string) => {
+      try {
+        const response = await fetch(`${API_URL}/api/goals?userId=${userId}`);
+        const data = await response.json();
+        setGoals(data);
+      } catch (error) {
+        console.error('Error fetching goals:', error);
+      }
+    };
 
     useEffect(() => {
-        if (userId) {
-          const fetchGoals = async () => {
-            try {
-              const response = await fetch(`${API_URL}/api/goals?userId=${userId}`);
-              const data = await response.json();
-              setGoals(data);
-            } catch (error) {
-              console.error('Error fetching goals:', error);
-            }
-          };
-          fetchGoals();
-        }
+      if (userId) {
+        fetchGoals(userId);
+      }
     }, [userId]);
+
+    // Add a refresh handler
+    const handleGoalUpdate = async () => {
+      if (userId) {
+        await fetchGoals(userId);
+        setChartRefreshTrigger(prev => prev + 1);
+      }
+    };
 
     const handleGoalSubmit = async (newGoal: Goal) => {
         try {
@@ -43,7 +52,8 @@ const App: React.FC = () => {
             body: JSON.stringify({ ...newGoal, userId }),
           });
           const savedGoal = await response.json();
-          setGoals([...goals, savedGoal]);
+          await fetchGoals(userId!); // Refresh the goals list
+          setChartRefreshTrigger(prev => prev + 1);
         } catch (error) {
           console.error('Error saving goal:', error);
         }
@@ -90,7 +100,10 @@ const App: React.FC = () => {
         </AppBar>
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             {currentPage === 'tracking' && (
-                <GoalTrackingPage userId={userId} />
+              <GoalTrackingPage 
+                userId={userId} 
+                onGoalUpdate={handleGoalUpdate}
+              />
             )}
             {currentPage === 'form' && (
                 <Paper
@@ -104,7 +117,14 @@ const App: React.FC = () => {
                 <Typography variant="h6" gutterBottom>
                     Add New Goal
                 </Typography>
-                <GoalForm onSubmit={handleGoalSubmit} />
+                <GoalForm
+                  onSubmit={async (newGoal) => {
+                    await handleGoalSubmit(newGoal);
+                    setAddGoalDialogOpen(false);
+                    setChartRefreshTrigger(prev => prev + 1); // Add this
+                  }}
+                  onClose={() => setAddGoalDialogOpen(false)}
+                />
                 </Paper>
             )}
             {currentPage === 'progress' && (
@@ -121,7 +141,8 @@ const App: React.FC = () => {
                           key={goal.id} 
                           goalId={goal.id} 
                           goalTitle={goal.title}
-                          defaultExpanded={true}  // Set to false if you want them collapsed by default
+                          defaultExpanded={true}
+                          refreshTrigger={chartRefreshTrigger} // Add this
                         />
                       ))
                     ) : (
@@ -157,6 +178,7 @@ const App: React.FC = () => {
                   onSubmit={async (newGoal) => {
                     await handleGoalSubmit(newGoal);
                     setAddGoalDialogOpen(false);
+                    handleGoalUpdate();
                   }}
                   onClose={() => setAddGoalDialogOpen(false)}
                 />

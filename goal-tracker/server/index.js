@@ -106,7 +106,9 @@ const writeLogs = async (logs) => {
 const readGoals = async () => {
   try {
     const data = await fs.readFile(dataPath, 'utf8');
-    return JSON.parse(data);
+    const goals = JSON.parse(data);
+    console.log('Read goals from file:', goals.length, 'goals found');
+    return goals;
   } catch (error) {
     console.error('Error reading goals:', error);
     return [];
@@ -115,7 +117,9 @@ const readGoals = async () => {
 
 const writeGoals = async (goals) => {
   try {
+    console.log('Writing goals to file:', goals.length, 'goals');
     await fs.writeFile(dataPath, JSON.stringify(goals, null, 2));
+    console.log('Goals successfully written to file');
   } catch (error) {
     console.error('Error writing goals:', error);
   }
@@ -176,19 +180,30 @@ app.get('/api/goals/:id', async (req, res) => {
   try {
     const goals = await readGoals();
     const requestedId = req.params.id;
+    console.log('GET /api/goals/:id - Requested ID:', requestedId);
+    console.log('Available goals:', goals.map(g => ({ id: g.id, title: g.title })));
     // console.debug('Requested ID:', requestedId);
     // console.debug('Available goals:', goals.map(g => ({ id: g.id, title: g.title })));
     
     const goal = goals.find(g => String(g.id) === String(requestedId));
     if (!goal) {
+      console.log('Goal not found for ID:', requestedId);
       // console.debug('Goal not found');
-      return res.status(404).json({ message: 'Goal not found' });
+      return res.status(404).json({ 
+        message: 'Goal not found',
+        requestedId,
+        availableIds: goals.map(g => g.id)
+      });
     }
+    console.log('Found goal:', goal);
     // console.debug('Found goal:', goal);
     res.json(goal);
   } catch (error) {
     console.error('Error in /api/goals/:id:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 

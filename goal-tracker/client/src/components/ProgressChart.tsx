@@ -10,6 +10,7 @@ interface ProgressChartProps {
   goalId: string;
   goalTitle: string;  // Add this prop to display the goal title
   defaultExpanded?: boolean;  // Optional prop to control initial expansion state
+  refreshTrigger?: number;
 }
 
 interface LogData {
@@ -44,7 +45,7 @@ interface Goal {
   repeatEveryNDays?: number;
 }
 
-export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle, defaultExpanded = true }) => {
+export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle, defaultExpanded = true, refreshTrigger = 0 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [streakData, setStreakData] = useState<StreakData[]>([]);
@@ -52,6 +53,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
   const [floorLabel, setFloorLabel] = useState<string>('');
   const [ceilingLabel, setCeilingLabel] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // Add this
 
   const calculateSuccessData = (logs: LogData[], goal: Goal): SuccessData[] => {
     const successData: SuccessData[] = [];
@@ -196,13 +198,27 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true); // Add this
+      setError(null); // Reset error state
       try {
         // Fetch goal details
+        console.log('Fetching goal with ID:', goalId); // Debug log
         const goalResponse = await fetch(`${API_URL}/api/goals/${goalId}`);
+        
+        if (goalResponse.status === 404) {
+          // Handle deleted goals gracefully
+          setChartData([]);
+          setStreakData([]);
+          setSuccessData([]);
+          setIsLoading(false);
+          return;
+        }
+
         if (!goalResponse.ok) {
           throw new Error(`Goal fetch failed with status: ${goalResponse.status}`);
         }
         const goal = await goalResponse.json();
+        console.log('Received goal:', goal); // Debug log
 
         // Store the text labels
         setFloorLabel(goal.floor);
@@ -240,20 +256,26 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({ goalId, goalTitle,
         setChartData(transformedData);
         setStreakData(streakData);
         setSuccessData(successData);
+        setIsLoading(false);
         setError(null);
       } catch (error) {
         console.error('Error fetching data:', error);
         setError(error instanceof Error ? error.message : 'An error occurred');
+        setIsLoading(false);
       }
     };
 
     if (goalId) {
       fetchData();
     }
-  }, [goalId]);
+  }, [goalId, refreshTrigger]);
+
+  if (isLoading) {
+    return <Box sx={{ textAlign: 'center', py: 2 }}>Loading...</Box>;
+  }
 
   if (error) {
-    return <Box sx={{ textAlign: 'center', py: 2, color: 'error.main' }}>Error loading progress data</Box>;
+    return <Box sx={{ textAlign: 'center', py: 2, color: 'error.main' }}>{error}</Box>;
   }
 
   if (chartData.length === 0) {

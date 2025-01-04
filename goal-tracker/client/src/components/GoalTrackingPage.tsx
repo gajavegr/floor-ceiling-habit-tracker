@@ -9,9 +9,10 @@ import { API_URL } from '../config';
 
 interface GoalTrackingPageProps {
   userId: string;
+  onGoalUpdate?: () => void;
 }
 
-export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): JSX.Element => {
+export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId, onGoalUpdate }): JSX.Element => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [logs, setLogs] = useState<{ [goalId: string]: GoalLog }>({});
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
@@ -21,7 +22,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
   const [selectedGoalForMenu, setSelectedGoalForMenu] = useState<Goal | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [addGoalDialogOpen, setAddGoalDialogOpen] = useState(false);
-
+  const [chartRefreshTrigger, setChartRefreshTrigger] = useState(0);
 
   // Fetch goals for the user
   useEffect(() => {
@@ -104,6 +105,9 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
         ...prev,
         [goalId]: newLog,
       }));
+      if (onGoalUpdate) {
+        onGoalUpdate(); // Call the update function after logging
+      }
     } catch (error) {
       console.error('Error updating goal status:', error);
     }
@@ -153,6 +157,9 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
       setGoals(goals.map(g => g.id === savedGoal.id ? savedGoal : g));
       setEditDialogOpen(false);
       setSelectedGoalForMenu(null);  // Clear selected goal after successful save
+      if (onGoalUpdate) {
+        onGoalUpdate(); // Call the update function after editing
+      }
     } catch (error) {
       console.error('Error updating goal:', error);
     }
@@ -166,6 +173,9 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
         method: 'DELETE',
       });
       setGoals(goals.filter(g => g.id !== selectedGoalForMenu.id));
+      if (onGoalUpdate) {
+        onGoalUpdate(); // Call the update function after deletion
+      }
     } catch (error) {
       console.error('Error deleting goal:', error);
     }
@@ -290,16 +300,31 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId }): J
         <GoalForm 
           onSubmit={async (newGoal) => {
             try {
+              const goalToSave = {
+                ...newGoal,
+                userId,
+                id: Date.now().toString(), // Ensure ID is set client-side
+              };
+
               const response = await fetch(`${API_URL}/api/goals`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...newGoal, userId }),
+                body: JSON.stringify(goalToSave),
               });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
               const savedGoal = await response.json();
-              setGoals([...goals, savedGoal]);
+              console.log('Saved goal:', savedGoal); // Debug log
+              setGoals(prevGoals => [...prevGoals, savedGoal]);
               setAddGoalDialogOpen(false);
+              if (onGoalUpdate) {
+                onGoalUpdate(); // Call the update function after adding
+              }
             } catch (error) {
               console.error('Error adding goal:', error);
             }
