@@ -5,6 +5,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import { format } from 'date-fns';
+import { API_URL } from '../config';
 
 interface GoalProgressPreviewProps {
     goalId: string;
@@ -30,8 +31,11 @@ export const GoalProgressPreview: React.FC<GoalProgressPreviewProps> = ({ goalId
         const dateStr = format(selectedDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx");
         debug('Client: Sending date to server:', dateStr);
         const response = await fetch(
-            `http://localhost:3001/api/goals/${goalId}/progress?date=${encodeURIComponent(dateStr)}`
+            `${API_URL}/api/goals/${goalId}/progress?date=${encodeURIComponent(dateStr)}`
         );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         setProgress(data);
       } catch (error) {

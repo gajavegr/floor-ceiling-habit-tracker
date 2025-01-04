@@ -274,6 +274,10 @@ app.get('/api/goals/:id/progress', async (req, res) => {
   try {
     const { id } = req.params;
     const { date } = req.query; // Current date to calculate progress from
+
+    debug('Server: Received date string:', date);
+    const currentDate = date ? new Date(date) : new Date();
+    debug('Server: Parsed date:', format(currentDate, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"));
     
     const goals = await readGoals();
     const logs = await readLogs();
@@ -283,8 +287,6 @@ app.get('/api/goals/:id/progress', async (req, res) => {
       return res.status(404).json({ message: 'Goal not found' });
     }
 
-    const currentDate = date ? new Date(date) : new Date();
-    
     switch (goal.frequencyType) {
       case 'days_per_period': {
         const currentDate = date ? new Date(date) : new Date();

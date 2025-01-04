@@ -44,7 +44,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId, onGo
         const year = selectedDate.getFullYear();
         const month = selectedDate.getMonth();
         const response = await fetch(
-          `http://localhost:3001/api/logs/month?userId=${userId}&year=${year}&month=${month}`
+          `${API_URL}/api/logs/month?userId=${userId}&year=${year}&month=${month}`
         );
         const data = await response.json();
         setMonthlyLogs(data);
@@ -148,9 +148,8 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId, onGo
   useEffect(() => {
     const fetchDayLogs = async () => {
       try {
-        const today = new Date().toISOString().split('T')[0];
-        const response = await fetch(`${API_URL}/api/logs?userId=${userId}&date=${today}`);
         const dateStr = format(selectedDate, 'yyyy-MM-dd');
+        const response = await fetch(`${API_URL}/api/logs?userId=${userId}&date=${dateStr}`);
         const data = await response.json();
         const logsMap = data.reduce((acc: any, log: GoalLog) => {
           acc[log.goalId] = log;
@@ -205,7 +204,6 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId, onGo
 
   const updateGoalStatus = async (goalId: string, status: 'achieved' | 'failed' | 'not_logged', rating?: number) => {
     try {
-      const today = new Date().toISOString().split('T')[0];
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const response = await fetch(`${API_URL}/api/logs`, {
         method: 'POST',
@@ -220,6 +218,11 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId, onGo
           rating,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const newLog = await response.json();
       
       // Update the daily logs
@@ -238,7 +241,7 @@ export const GoalTrackingPage: React.FC<GoalTrackingPageProps> = ({ userId, onGo
       const year = selectedDate.getFullYear();
       const month = selectedDate.getMonth();
       const monthlyResponse = await fetch(
-        `http://localhost:3001/api/logs/month?userId=${userId}&year=${year}&month=${month}`
+        `${API_URL}/api/logs/month?userId=${userId}&year=${year}&month=${month}`
       );
       const monthlyData = await monthlyResponse.json();
       setMonthlyLogs(monthlyData);

@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "1735966888448",
+    "userId": "1735966847331",
+    "category": "Health",
+    "title": "Exercise 3x per week",
+    "floor": "10 Pullups per day",
+    "ceiling": "Lifting session at the gym",
+    "unit": "",
+    "startDate": "2025-01-04T05:00:51.908Z",
+    "frequencyType": "days_per_period",
+    "daysPerPeriod": 3,
+    "periodUnit": "week",
+    "targetDate": "2025-12-31T05:00:00.000Z",
+    "targetSuccesses": 156,
+    "createdAt": "2025-01-04T05:01:28.448Z"
+  }
+]
