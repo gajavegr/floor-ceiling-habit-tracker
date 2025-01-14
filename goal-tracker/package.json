@@ -1,0 +1,31 @@
+{
+  "name": "goal-tracker",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "version": "1.0.0",
+  "description": "v1.0.0 setting up empty app",
+  "scripts": {
+    "start": "npm run start --workspace=@goal-tracker/client",
+    "start:debug": "PORT=3000 DEBUG=true react-scripts start",
+    "build": "npm run build --workspace=@goal-tracker/client",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "server": "npm run start --workspace=@goal-tracker/server",
+    "server:debug": "DEBUG=true node server/index.js",
+    "dev": "concurrently \"npm run start\" \"npm run server\"",
+    "dev:debug": "concurrently \"npm run start:debug\" \"npm run server:debug\""
+  },
+  "author": "gajavegr",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gajavegr/floor-ceiling-habit-tracker.git"
+  },
+  "homepage": ".",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

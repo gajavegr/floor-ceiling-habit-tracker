@@ -1,0 +1,12 @@
+[build]
+  builder = "nixpacks"
+
+[deploy]
+  startCommand = "node index.js"
+  healthcheckPath = "/health"
+  restartPolicy = "on-failure"
+  maxRetries = 3
+
+[env]
+  NODE_ENV = "production"
+  NPM_CONFIG_PRODUCTION = "true"

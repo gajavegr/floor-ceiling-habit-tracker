@@ -1,0 +1,12 @@
+[build]
+  base = "goal-tracker/client"
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
