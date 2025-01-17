@@ -18,11 +18,12 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs').promises;
 const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;  // Changed from 3001 to 3000
 
-const DATA_DIR = process.env.NODE_ENV === 'production' 
+const DATA_DIR = process.env.NODE_ENV === 'production'
   ? path.join('/tmp', 'data')
   : path.join(__dirname, 'data');
 
@@ -184,12 +185,12 @@ app.get('/api/goals/:id', async (req, res) => {
     console.log('Available goals:', goals.map(g => ({ id: g.id, title: g.title })));
     // console.debug('Requested ID:', requestedId);
     // console.debug('Available goals:', goals.map(g => ({ id: g.id, title: g.title })));
-    
+
     const goal = goals.find(g => String(g.id) === String(requestedId));
     if (!goal) {
       console.log('Goal not found for ID:', requestedId);
       // console.debug('Goal not found');
-      return res.status(404).json({ 
+      return res.status(404).json({
         message: 'Goal not found',
         requestedId,
         availableIds: goals.map(g => g.id)
@@ -200,7 +201,7 @@ app.get('/api/goals/:id', async (req, res) => {
     res.json(goal);
   } catch (error) {
     console.error('Error in /api/goals/:id:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
@@ -229,14 +230,14 @@ app.post('/api/logs', async (req, res) => {
       id: Date.now().toString(),
       ...req.body,
     };
-    
+
     // Remove any existing log for this goal/user/date combination
     const filteredLogs = logs.filter(
-      log => !(log.goalId === newLog.goalId && 
-               log.userId === newLog.userId && 
-               log.date === newLog.date)
+      log => !(log.goalId === newLog.goalId &&
+        log.userId === newLog.userId &&
+        log.date === newLog.date)
     );
-    
+
     filteredLogs.push(newLog);
     await writeLogs(filteredLogs);
     res.status(201).json(newLog);
@@ -269,7 +270,7 @@ app.put('/api/goals/:id', async (req, res) => {
     if (index === -1) {
       return res.status(404).json({ message: 'Goal not found' });
     }
-    
+
     // Preserve the id and creation date
     const updatedGoal = {
       ...goals[index],
@@ -277,7 +278,7 @@ app.put('/api/goals/:id', async (req, res) => {
       id: goals[index].id,
       createdAt: goals[index].createdAt,
     };
-    
+
     goals[index] = updatedGoal;
     await writeGoals(goals);
     res.json(updatedGoal);
@@ -307,7 +308,7 @@ app.use((err, req, res, next) => {
     path: req.path,
     method: req.method
   });
-  
+
   res.status(500).json({
     message: 'Internal server error',
     error: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
