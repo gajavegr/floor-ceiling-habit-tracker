@@ -1,0 +1,11 @@
+[build]
+  dockerfile = "Dockerfile"
+
+[deploy]
+  startCommand = "node index.js"
+  healthcheckPath = "/health"
+  restartPolicy = "on-failure"
+  maxRetries = 3
+
+[env]
+  NODE_ENV = "production"
