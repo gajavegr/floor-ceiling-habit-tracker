@@ -31,7 +31,7 @@ const DATA_DIR = process.env.NODE_ENV === 'production'
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
-  'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app',
+  // 'https://gajavegr-mvp-functionality--floor-ceiling-goal-tracker.netlify.app',
   'https://floor-ceiling-goal-tracker.netlify.app'
 ];
 
